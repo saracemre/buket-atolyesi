@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Buket Atölyesi</title>
+  <meta name="description" content="Çiçeklerini seç, buketini kendin tasarla: 20 çiçek türü, gerçek çiçek fotoğrafları, ambalaj ve kurdele seçimi, 3D döndürülebilir buket görünümü." />
+  <meta name="theme-color" content="#b8385e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Buket Atölyesi" />
+  <meta property="og:description" content="Çiçeklerini seç, buketini kendin tasarla — 2D ve 3D buket tasarım atölyesi." />
+  <meta property="og:url" content="https://saracemre.github.io/buket-atolyesi/" />
+  <meta property="og:image" content="https://saracemre.github.io/buket-atolyesi/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='15' r='7' fill='%23c8456a'/%3E%3Ccircle cx='13' cy='19' r='5' fill='%23f2a7bb'/%3E%3Ccircle cx='27' cy='19' r='5' fill='%23f2a7bb'/%3E%3Cpath d='M12 23 L20 37 L28 23 Z' fill='%23c49a6c'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=20260925-1" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="15" r="7" fill="#c8456a" />
+        <circle cx="13" cy="19" r="5" fill="#f2a7bb" />
+        <circle cx="27" cy="19" r="5" fill="#f2a7bb" />
+        <path d="M12 23 L20 37 L28 23 Z" fill="#c49a6c" />
+        <path d="M16 31 Q20 29 24 31" stroke="#8f3552" stroke-width="2" fill="none" />
+      </svg>
+      <div>
+        <h1>Buket Atölyesi</h1>
+        <p>Çiçeklerini seç, buketini kendin tasarla</p>
+      </div>
+    </div>
+    <nav class="mode-switch" role="tablist" aria-label="Buket türü">
+      <button type="button" role="tab" class="mode-btn is-active" data-mode="draw" aria-selected="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.8 2-1.8 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8Z"/><circle cx="7.5" cy="11" r="1.3"/><circle cx="10.5" cy="7" r="1.3"/><circle cx="15" cy="7.5" r="1.3"/></svg>
+        Çizim Buket
+      </button>
+      <button type="button" role="tab" class="mode-btn" data-mode="real" aria-selected="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        Gerçek Buket
+      </button>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <!-- SOL: Tasarım paneli -->
+    <aside class="panel panel-left">
+      <div class="tabs" role="tablist">
+        <button class="tab is-active" role="tab" data-tab="flowers" aria-selected="true">Çiçekler</button>
+        <button class="tab" role="tab" data-tab="decor" aria-selected="false">Ambalaj &amp; Süsleme</button>
+      </div>
+
+      <!-- Çiçekler sekmesi -->
+      <section class="tab-panel" data-panel="flowers">
+        <div class="group">
+          <h2 class="group-title"><span class="step">1</span>Buket boyutu <span class="muted" id="sizeName"></span></h2>
+          <div class="size-chips" id="sizeChips"></div>
+          <div class="size-custom">
+            <span class="muted">Özel:</span>
+            <div class="stepper">
+              <button type="button" id="sizeMinus" aria-label="Yer sayısını azalt">−</button>
+              <input type="number" id="sizeInput" min="3" max="60" aria-label="Çiçek yeri sayısı" />
+              <button type="button" id="sizePlus" aria-label="Yer sayısını artır">+</button>
+            </div>
+            <span class="muted">çiçeklik yer</span>
+          </div>
+        </div>
+
+        <div class="group">
+          <h2 class="group-title"><span class="step">2</span>Çiçek türü <span class="muted" id="typeCount"></span></h2>
+          <div class="flower-grid" id="flowerGrid"></div>
+        </div>
+
+        <div class="group">
+          <h2 class="group-title"><span class="step">3</span>Renk <span class="muted" id="colorName"></span></h2>
+          <div class="swatches" id="flowerColors"></div>
+        </div>
+
+        <div class="add-box">
+          <div class="add-head">
+            <div class="add-preview" id="addPreview"></div>
+            <div class="add-text">
+              <strong id="addSummary">Kırmızı Gül</strong>
+              <span class="muted" id="addHint">Buketteki <b class="plus">+</b> yerlerine tıklayarak istediğin yere yerleştir</span>
+            </div>
+          </div>
+          <div class="add-row">
+            <div class="stepper">
+              <button type="button" id="qtyMinus" aria-label="Azalt">−</button>
+              <input type="number" id="qtyInput" min="1" max="60" value="3" aria-label="Adet" />
+              <button type="button" id="qtyPlus" aria-label="Artır">+</button>
+            </div>
+            <button type="button" class="btn primary" id="addBtn">Otomatik yerleştir</button>
+          </div>
+          <button type="button" class="link-btn" id="fillBtn">Kalan boş yerleri bu çiçekle doldur</button>
+        </div>
+      </section>
+
+      <!-- Süsleme sekmesi -->
+      <section class="tab-panel" data-panel="decor" hidden>
+        <div class="group">
+          <h2 class="group-title">Ambalaj kağıdı <span class="muted" id="outerName"></span></h2>
+          <div class="swatches" id="outerColors"></div>
+        </div>
+        <div class="group">
+          <h2 class="group-title">İç kağıt <span class="muted" id="innerName"></span></h2>
+          <div class="swatches" id="innerColors"></div>
+        </div>
+        <div class="group">
+          <h2 class="group-title">Bağlama <span class="muted" id="tieName"></span></h2>
+          <div class="segmented" id="tieStyle">
+            <button type="button" data-style="ribbon">Saten kurdele</button>
+            <button type="button" data-style="twine">Jüt ip</button>
+          </div>
+          <div class="swatches" id="tieColors"></div>
+        </div>
+        <div class="group">
+          <h2 class="group-title">Dolgu çiçekleri</h2>
+          <label class="switch-row">
+            <span>
+              <strong>Cipsofil</strong>
+              <small class="muted">Buketteki minik beyaz çiçekler</small>
+            </span>
+            <input type="checkbox" id="gypsToggle" class="switch" />
+          </label>
+          <div class="swatches small" id="gypsColors"></div>
+          <label class="switch-row">
+            <span>
+              <strong>Yeşillik</strong>
+              <small class="muted">Okaliptüs, salal ve ruskus yaprakları</small>
+            </span>
+            <input type="checkbox" id="greenToggle" class="switch" />
+          </label>
+          <div class="segmented" id="greenAmount" role="group" aria-label="Yeşillik miktarı">
+            <button type="button" data-amount="az">Az</button>
+            <button type="button" data-amount="dogal">Doğal</button>
+            <button type="button" data-amount="bol">Bol</button>
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <!-- ORTA: Buket önizlemesi -->
+    <section class="stage" id="stage" aria-label="Buket önizlemesi">
+      <div class="stage-tools">
+        <div class="segmented small" id="viewSwitch" role="group" aria-label="Görünüm">
+          <button type="button" data-view="2d" class="is-active">2D</button>
+          <button type="button" data-view="3d">3D</button>
+        </div>
+        <button type="button" class="chip-btn" id="rotateBtn" title="Buketi kendi etrafında döndür" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5" /></svg>
+          <span>Döndür</span>
+        </button>
+
+        <button type="button" class="chip-btn" id="resetViewBtn" title="Görünümü sıfırla" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h3M17 12h3M12 4v3M12 17v3"/><circle cx="12" cy="12" r="4"/></svg>
+          <span>Ortala</span>
+        </button>
+        <button type="button" class="chip-btn" id="previewBtn" title="Boş yer işaretlerini gizle / göster">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Önizleme</span>
+        </button>
+        <button type="button" class="chip-btn" id="shuffleBtn" title="Çiçeklerin yerini karıştır">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" /></svg>
+          <span>Karıştır</span>
+        </button>
+        <button type="button" class="chip-btn" id="downloadBtn" title="Buketi resim olarak indir">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>
+          <span>PNG</span>
+        </button>
+      </div>
+      <div class="segmented small view-presets" id="viewPresets" role="group" aria-label="Hazır açılar" hidden>
+        <button type="button" data-preset="front" title="Önden bak">Ön</button>
+        <button type="button" data-preset="side" title="Yandan bak">Yan</button>
+        <button type="button" data-preset="back" title="Arkadan bak">Arka</button>
+        <button type="button" data-preset="top" title="Üstten bak">Üst</button>
+      </div>
+      <svg id="bouquet" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Buketiniz"></svg>
+      <div class="gl-wrap" id="glWrap" hidden></div>
+      <div class="popover" id="popover" hidden>
+        <div class="pop-head">
+          <div class="pop-ico" id="popIco"></div>
+          <strong id="popName"></strong>
+          <button type="button" class="pop-close" id="popClose" aria-label="Kapat">✕</button>
+        </div>
+        <div class="pop-actions">
+          <button type="button" class="btn small" id="popReplace">Seçili çiçekle değiştir</button>
+          <button type="button" class="btn small danger" id="popRemove">Kaldır</button>
+        </div>
+      </div>
+      <div class="stage-hint" id="stageHint"></div>
+    </section>
+
+    <!-- SAĞ: Buket içeriği -->
+    <aside class="panel panel-right">
+      <div class="right-head">
+        <h2>Buketim</h2>
+        <span class="badge" id="totalBadge">0 / 0</span>
+      </div>
+      <div class="fill-meter"><div class="fill-bar" id="fillBar"></div></div>
+      <p class="fill-text muted" id="fillText"></p>
+      <ul class="bq-list" id="bqList"></ul>
+      <div class="list-empty muted" id="listEmpty">Henüz çiçek eklenmedi. Soldan bir çiçek seçip buketteki boş yerlere tıkla.</div>
+      <div class="right-foot">
+        <div class="summary" id="decorSummary"></div>
+        <div class="foot-actions">
+          <button type="button" class="btn ghost" id="spreadBtn" title="Aynı çiçekleri bukete eşit dağıt">Eşit dağıt</button>
+          <button type="button" class="btn ghost" id="clearBtn">Temizle</button>
+        </div>
+        <button type="button" class="link-btn center" id="creditsBtn">Kaynaklar ve lisanslar</button>
+      </div>
+    </aside>
+  </main>
+
+  <div class="modal" id="creditsModal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="creditsTitle">
+      <div class="modal-head">
+        <h2 id="creditsTitle">Fotoğraf kaynakları</h2>
+        <button type="button" class="pop-close" id="creditsClose" aria-label="Kapat">✕</button>
+      </div>
+      <p class="muted">Gerçek buket modundaki çiçek fotoğrafları Wikimedia Commons'tan alınmış, arka planları yapay zekâ ile temizlenmiştir. Her fotoğraf kendi lisansıyla kullanılmaktadır; arka planı temizlenmiş (uyarlanmış) görseller, özgün fotoğrafın lisansı altında (CC BY-SA olanlar CC BY-SA ile) paylaşılır.</p>
+      <p class="muted">3D görünüm <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> (MIT lisansı) ile yapılmıştır. Kağıt dokusu: ambientCG (CC0).</p>
+      <div class="credits-list" id="creditsList"></div>
+    </div>
+  </div>
+
+  <div class="load-error" id="loadError" hidden>
+    <strong>Sayfa düzgün yüklenemedi.</strong>
+    Tarayıcı eski dosyaları kullanıyor olabilir: <b>Cmd + Shift + R</b> (Windows: Ctrl + F5) ile yenileyin.
+    <code></code>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /* Bir betik hata verirse boş ekran yerine uyarı göster */
+    window.addEventListener('error', function (e) {
+      var box = document.getElementById('loadError');
+      if (!box) return;
+      box.hidden = false;
+      box.querySelector('code').textContent = (e.message || 'Bilinmeyen hata') + (e.filename ? ' — ' + e.filename.split('/').pop() : '');
+    });
+  </script>
+  <script src="js/util.js?v=20260925-1"></script>
+  <script src="js/flowers.js?v=20260925-1"></script>
+  <script src="js/flowers-extra.js?v=20260925-1"></script>
+  <script src="js/model.js?v=20260925-1"></script>
+  <script src="js/bouquet.js?v=20260925-1"></script>
+  <script src="js/real-assets.js?v=20260925-1"></script>
+  <script src="js/real.js?v=20260925-1"></script>
+  <script src="vendor/three.bundle.js?v=20260925-1"></script>
+  <script src="js/flowers3d.js?v=20260925-1"></script>
+  <script src="js/bouquet3d.js?v=20260925-1"></script>
+  <script src="js/app.js?v=20260925-1"></script>
+</body>
+</html>
