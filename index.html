@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20260925-1" />
+  <link rel="stylesheet" href="css/styles.css?v=20260925-2" />
 </head>
 <body>
   <header class="topbar">
@@ -169,6 +169,10 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" /></svg>
           <span>Karıştır</span>
         </button>
+        <button type="button" class="chip-btn accent" id="shareBtn" title="Buketini bağlantıyla paylaş">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="m8.3 10.8 7.4-4.3M8.3 13.2l7.4 4.3"/></svg>
+          <span>Paylaş</span>
+        </button>
         <button type="button" class="chip-btn" id="downloadBtn" title="Buketi resim olarak indir">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>
           <span>PNG</span>
@@ -194,6 +198,16 @@
         </div>
       </div>
       <div class="stage-hint" id="stageHint"></div>
+      <div class="shared-banner" id="sharedBanner" hidden>
+        <div class="sb-text">
+          <strong>💐 Sana bir buket paylaşıldı</strong>
+          <span>Bu buketi bağlantıyı gönderen kişi tasarladı. Düzenlersen senin buketin olarak kaydedilir.</span>
+        </div>
+        <div class="sb-actions">
+          <button type="button" class="btn small" id="sharedAdopt">Bu buketi düzenle</button>
+          <button type="button" class="btn small ghost-sm" id="sharedLeave">Kendi buketime dön</button>
+        </div>
+      </div>
     </section>
 
     <!-- SAĞ: Buket içeriği -->
@@ -208,6 +222,7 @@
       <div class="list-empty muted" id="listEmpty">Henüz çiçek eklenmedi. Soldan bir çiçek seçip buketteki boş yerlere tıkla.</div>
       <div class="right-foot">
         <div class="summary" id="decorSummary"></div>
+        <button type="button" class="btn primary share-main" id="shareBtn2"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="m8.3 10.8 7.4-4.3M8.3 13.2l7.4 4.3"/></svg><span>Buketimi paylaş</span></button>
         <div class="foot-actions">
           <button type="button" class="btn ghost" id="spreadBtn" title="Aynı çiçekleri bukete eşit dağıt">Eşit dağıt</button>
           <button type="button" class="btn ghost" id="clearBtn">Temizle</button>
@@ -229,6 +244,32 @@
     </div>
   </div>
 
+  <div class="modal" id="shareModal" hidden>
+    <div class="modal-card share-card" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+      <div class="modal-head">
+        <h2 id="shareTitle">Buketini paylaş</h2>
+        <button type="button" class="pop-close" id="shareClose" aria-label="Kapat">✕</button>
+      </div>
+      <div class="share-body">
+        <div class="share-preview" id="sharePreview"></div>
+        <div class="share-side">
+          <p class="muted">Bu bağlantıyı açan herkes buketini tam senin tasarladığın gibi görür; istersen kendisi de düzenleyebilir.</p>
+          <div class="share-link">
+            <input type="text" id="shareLink" readonly aria-label="Paylaşım bağlantısı" />
+            <button type="button" class="btn primary" id="shareCopy">Kopyala</button>
+          </div>
+          <div class="share-targets">
+            <button type="button" class="target" data-target="whatsapp"><span class="dot wa"></span>WhatsApp</button>
+            <button type="button" class="target" data-target="telegram"><span class="dot tg"></span>Telegram</button>
+            <button type="button" class="target" data-target="x"><span class="dot xx"></span>X</button>
+            <button type="button" class="target" data-target="email"><span class="dot em"></span>E-posta</button>
+            <button type="button" class="target" data-target="native" id="shareNative" hidden><span class="dot nt"></span>Diğer…</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="load-error" id="loadError" hidden>
     <strong>Sayfa düzgün yüklenemedi.</strong>
     Tarayıcı eski dosyaları kullanıyor olabilir: <b>Cmd + Shift + R</b> (Windows: Ctrl + F5) ile yenileyin.
@@ -245,16 +286,17 @@
       box.querySelector('code').textContent = (e.message || 'Bilinmeyen hata') + (e.filename ? ' — ' + e.filename.split('/').pop() : '');
     });
   </script>
-  <script src="js/util.js?v=20260925-1"></script>
-  <script src="js/flowers.js?v=20260925-1"></script>
-  <script src="js/flowers-extra.js?v=20260925-1"></script>
-  <script src="js/model.js?v=20260925-1"></script>
-  <script src="js/bouquet.js?v=20260925-1"></script>
-  <script src="js/real-assets.js?v=20260925-1"></script>
-  <script src="js/real.js?v=20260925-1"></script>
-  <script src="vendor/three.bundle.js?v=20260925-1"></script>
-  <script src="js/flowers3d.js?v=20260925-1"></script>
-  <script src="js/bouquet3d.js?v=20260925-1"></script>
-  <script src="js/app.js?v=20260925-1"></script>
+  <script src="js/util.js?v=20260925-2"></script>
+  <script src="js/flowers.js?v=20260925-2"></script>
+  <script src="js/flowers-extra.js?v=20260925-2"></script>
+  <script src="js/model.js?v=20260925-2"></script>
+  <script src="js/bouquet.js?v=20260925-2"></script>
+  <script src="js/real-assets.js?v=20260925-2"></script>
+  <script src="js/real.js?v=20260925-2"></script>
+  <script src="vendor/three.bundle.js?v=20260925-2"></script>
+  <script src="js/flowers3d.js?v=20260925-2"></script>
+  <script src="js/bouquet3d.js?v=20260925-2"></script>
+  <script src="js/share.js?v=20260925-2"></script>
+  <script src="js/app.js?v=20260925-2"></script>
 </body>
 </html>

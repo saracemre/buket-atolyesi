@@ -102,8 +102,10 @@
   const store = load();
   const S = () => store[ui.mode];
   function save() {
+    // paylaşılan bir buket görüntüleniyorsa, o mod için kişinin kendi buketi saklanır
+    const pick = (m) => (ui.shared && ui.shared.mode === m ? ui.shared.own : store[m]);
     try {
-      localStorage.setItem(STORE_KEY, JSON.stringify({ mode: ui.mode, view: ui.view, draw: store.draw, real: store.real }));
+      localStorage.setItem(STORE_KEY, JSON.stringify({ mode: ui.mode, view: ui.view, draw: pick('draw'), real: pick('real') }));
     } catch (e) { /* yok say */ }
   }
 
@@ -119,6 +121,7 @@
     selected: null,
     showSlots: true,
     drag: null,
+    shared: null, // {mode, own, sig, code}: bağlantıyla açılmış buket
   };
   const brush = () => ui.brush[ui.mode];
   const brushFlower = () => ({ type: brush().type, color: brush().color, colorName: brush().name });
@@ -468,6 +471,7 @@
 
   // ---------- Commit ----------
   function commit(o = {}) {
+    if (ui.shared && ui.shared.mode === ui.mode && !o.live && sharedSig(S(), ui.mode) !== ui.shared.sig) adoptShared(true);
     save();
     if (o.live) {
       // renk tekerleği sürüklenirken sadece çizimi güncelle
@@ -817,6 +821,7 @@
     if (e.target.matches('input, textarea')) return;
     if (e.key === 'Escape') {
       $('creditsModal').hidden = true;
+      $('shareModal').hidden = true;
       deselect();
     } else if ((e.key === 'Delete' || e.key === 'Backspace') && ui.selected != null) {
       e.preventDefault();
@@ -824,6 +829,126 @@
     }
   });
   window.addEventListener('resize', () => { if (ui.selected != null) showPopover(ui.selected); });
+
+  // ---------- Paylaşım ----------
+  const nameOf = (list, hex) => (list.find(([, h]) => h.toLowerCase() === String(hex).toLowerCase()) || ['Özel renk'])[0];
+  const sharedSig = (st, mode) => Share.encode(st, mode, '2d');
+  function clearHash() {
+    if (location.hash) history.replaceState(null, '', location.href.split('#')[0]);
+  }
+  function applyShared(code) {
+    let data;
+    try { data = Share.decode(code); } catch (e) { toast('Paylaşım bağlantısı açılamadı'); return false; }
+    if (data.mode === 'real' && !CATALOG.real) return false;
+    const st = data.state;
+    st.wrap.outerName = nameOf(PAPERS, st.wrap.outer);
+    st.wrap.innerName = nameOf(PAPERS, st.wrap.inner);
+    st.tie.name = nameOf(TIES, st.tie.color);
+    st.filler.gypsName = nameOf(GYPS, st.filler.gypsColor);
+    const valid = validState(st, data.mode);
+    if (!valid) return false;
+    // daha önce başka bir paylaşım açıksa, kişinin kendi buketini geri koy
+    if (ui.shared) store[ui.shared.mode] = ui.shared.own;
+    ui.shared = { mode: data.mode, own: store[data.mode], sig: sharedSig(valid, data.mode), code };
+    store[data.mode] = valid;
+    ui.mode = data.mode;
+    ui.view = data.view === '3d' && window.Bouquet3D && Bouquet3D.supported() ? '3d' : '2d';
+    ui.selected = null;
+    ui.drag = null;
+    ui.showSlots = false; // alıcı temiz bir buket görsün
+    return true;
+  }
+  function adoptShared(auto) {
+    if (!ui.shared) return;
+    ui.shared = null;
+    clearHash();
+    save();
+    renderShared();
+    toast(auto ? 'Paylaşılan buket artık senin buketin olarak kaydedildi' : 'Buket senin buketin oldu — dilediğin gibi düzenleyebilirsin');
+  }
+  function leaveShared() {
+    if (!ui.shared) return;
+    store[ui.shared.mode] = ui.shared.own;
+    ui.shared = null;
+    ui.showSlots = true;
+    ui.selected = null;
+    clearHash();
+    hidePopover();
+    save();
+    renderAll({ refit: true });
+  }
+  function renderShared() {
+    const on = !!(ui.shared && ui.shared.mode === ui.mode);
+    $('sharedBanner').hidden = !on;
+    $('stage').classList.toggle('is-shared', on);
+    document.title = on ? '💐 Sana bir buket — Buket Atölyesi' : 'Buket Atölyesi';
+    $('previewBtn').classList.toggle('is-on', !ui.showSlots);
+  }
+
+  const SHARE_TEXT = 'Sana bir buket hazırladım 💐';
+  function openShare() {
+    const st = S();
+    if (!Model.filledCount(st)) return toast('Paylaşmak için önce bukete çiçek ekle');
+    hidePopover();
+    const link = Share.url(Share.encode(st, ui.mode, ui.view));
+    $('shareLink').value = link;
+    $('shareCopy').textContent = 'Kopyala';
+    const pv = $('sharePreview');
+    if (ui.view === '3d' && view3d) {
+      pv.innerHTML = `<img alt="Buket önizlemesi" src="${view3d.snapshot(700)}" />`;
+    } else {
+      const r = Bouquet.render(st, { prefix: 'sh-', editing: false, photo: provider(), paperTex: paperTex() });
+      pv.innerHTML = `<svg viewBox="${r.viewBox.join(' ')}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"><defs>${r.defs}</defs>${r.body}</svg>`;
+    }
+    $('shareNative').hidden = !navigator.share;
+    $('shareModal').hidden = false;
+    setTimeout(() => $('shareLink').select(), 50);
+  }
+  function copyLink() {
+    const inp = $('shareLink');
+    const done = () => { $('shareCopy').textContent = 'Kopyalandı ✓'; toast('Bağlantı kopyalandı'); };
+    const fallback = () => {
+      inp.focus();
+      inp.select();
+      try { document.execCommand('copy'); done(); } catch (e) { toast('Kopyalanamadı — bağlantıyı elle seçip kopyala'); }
+    };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(inp.value).then(done, fallback);
+    else fallback();
+  }
+  function shareTo(target) {
+    const link = $('shareLink').value;
+    const enc = encodeURIComponent;
+    const urls = {
+      whatsapp: `https://wa.me/?text=${enc(SHARE_TEXT + ' ' + link)}`,
+      telegram: `https://t.me/share/url?url=${enc(link)}&text=${enc(SHARE_TEXT)}`,
+      x: `https://twitter.com/intent/tweet?text=${enc(SHARE_TEXT)}&url=${enc(link)}`,
+    };
+    if (target === 'email') {
+      location.href = `mailto:?subject=${enc('Sana bir buket 💐')}&body=${enc(SHARE_TEXT + '\n\n' + link)}`;
+    } else if (target === 'native') {
+      navigator.share({ title: 'Buket Atölyesi', text: SHARE_TEXT, url: link }).catch(() => {});
+    } else if (urls[target]) {
+      window.open(urls[target], '_blank', 'noopener');
+    }
+  }
+  $('shareBtn').addEventListener('click', openShare);
+  $('shareBtn2').addEventListener('click', openShare);
+  $('shareCopy').addEventListener('click', copyLink);
+  $('shareClose').addEventListener('click', () => ($('shareModal').hidden = true));
+  $('shareModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.hidden = true; });
+  document.querySelectorAll('.share-targets .target').forEach((b) => b.addEventListener('click', () => shareTo(b.dataset.target)));
+  $('sharedAdopt').addEventListener('click', () => {
+    ui.showSlots = true;
+    adoptShared(false);
+    renderStage();
+    renderHint();
+  });
+  $('sharedLeave').addEventListener('click', leaveShared);
+  window.addEventListener('hashchange', () => {
+    const code = Share.fromLocation();
+    if (!code || (ui.shared && ui.shared.code === code)) return;
+    if (applyShared(code)) { hidePopover(); save(); renderAll({ refit: true }); }
+  });
 
   // ---------- Başlat ----------
   function renderAll(o = {}) {
@@ -837,7 +962,10 @@
     renderList();
     updateAddBox();
     renderHint();
+    renderShared();
   }
+  const initialCode = window.Share && Share.fromLocation();
+  if (initialCode) applyShared(initialCode);
   if (ui.view === '3d' && !(window.Bouquet3D && Bouquet3D.supported())) ui.view = '2d';
   if (!(window.Bouquet3D && Bouquet3D.supported())) document.querySelector('#viewSwitch [data-view="3d"]').disabled = true;
   renderAll({ refit: true });

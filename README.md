@@ -42,6 +42,8 @@ etkin yarıçapı ölçülüp yerleşim buna göre yapılır (çiçekler yalnız
 Fotoğraflardaki ışık yönü tutarlı kalsın diye çiçekler yalnızca ±18° döndürülür; dış sıradakiler
 hafif gölgede kalır.
 
+🌐 **Canlı site:** https://saracemre.github.io/buket-atolyesi/
+
 ## Çalıştırma
 
 Kurulum gerekmez, internet bağlantısı da gerekmez (3D kütüphanesi ve fotoğraflar projenin içinde).
@@ -62,6 +64,17 @@ Kurulum gerekmez, internet bağlantısı da gerekmez (3D kütüphanesi ve fotoğ
 5. **Ambalaj & Süsleme:** Dış ve iç kağıt rengi, saten kurdele / jüt ip ve rengi,
    cipsofil (varsayılan minik beyaz çiçekler, rengi seçilebilir) ve yeşillik.
 6. **PNG** ile buketi resim olarak indir. Buket tarayıcıda otomatik kaydedilir.
+7. **Paylaş** ile buketin bağlantısını al (WhatsApp, Telegram, X, e-posta ya da kopyala).
+   Bağlantıyı açan kişi buketi birebir aynı görür; kendi kayıtlı buketi bozulmaz,
+   isterse "Bu buketi düzenle" diyerek devam eder.
+
+## Paylaşım bağlantısı nasıl çalışır?
+
+Sunucu yoktur: buketin tamamı (çiçekler, yerleri, renkler, kağıt, kurdele, dolgu, 2D/3D)
+küçük bir bayt dizisine kodlanıp adresin `#b=...` kısmına yazılır (`js/share.js`).
+12 çiçeklik bir buket ~100, 60 çiçeklik en büyük buket ~270 karakter tutar. Hiçbir veri
+bir yerde saklanmaz. Tür ve renk listelerine yeni öğeler yalnızca sona eklenmelidir,
+yoksa eski bağlantılar farklı çiçekler gösterir.
 
 ## Çiçek çeşitleri
 
@@ -90,6 +103,13 @@ js/flowers3d.js       Gerçek 3D çiçek modelleri (kodla üretilir)
 js/bouquet3d.js       3D buket sahnesi, ışık, kontroller
 js/real.js            Gerçek çiçek kataloğu ve fotoğraf sağlayıcı
 js/real-assets.js     Gömülü fotoğraflar ve kağıt dokusu (otomatik üretildi)
+js/share.js           Paylaşım bağlantısı kodlayıcısı
 js/app.js             Arayüz ve durum yönetimi
 vendor/three.bundle.js Three.js r186 + OrbitControls, RoomEnvironment, GTAO (MIT: vendor/THREE-LICENSE.txt)
 ```
+
+## Yayın
+
+Site GitHub Pages ile `main` dalının kökünden yayınlanır; `main`'e yapılan her gönderim
+yaklaşık bir dakika içinde canlı siteye yansır. Tarayıcı önbelleği sorun çıkarmasın diye
+`index.html` içindeki `?v=...` sürüm etiketleri her güncellemede artırılır.
