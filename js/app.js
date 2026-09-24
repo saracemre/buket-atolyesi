@@ -435,6 +435,8 @@
       newSlots: new Set(newSlots || []),
       refit,
     });
+    // sayfa doğrudan 3B görünümde açıldıysa sahne burada ilk kez oluşur: çizim döngüsünü başlat
+    view3d.setActive(ui.view === '3d');
   }
   function renderStage(newSlots, o = {}) {
     if (ui.view === '3d') draw3D(newSlots, o.refit);

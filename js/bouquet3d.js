@@ -210,6 +210,7 @@
     let userZoomed = false;
     let ext = null;
     const pops = [];
+    let warmUntil = 0;
     const matCache = new Map();
     const texCache = new Map();
     const invalidate = () => { dirty = true; };
@@ -616,6 +617,7 @@
       refit(!built || o.refit);
       built = { slotObjs, markers, pickables };
       renderer.shadowMap.needsUpdate = true;
+      warmUntil = performance.now() + 600;
       invalidate();
     }
 
@@ -775,7 +777,7 @@
         dirty = true;
       }
       if (controls.update(dt)) dirty = true;
-      if (controls.autoRotate) dirty = true;
+      if (controls.autoRotate || now < warmUntil) dirty = true;
       for (let i = pops.length - 1; i >= 0; i--) {
         const p = pops[i];
         const k = Math.min(1, (now - p.t0) / 550);
@@ -892,6 +894,8 @@
           resize();
           invalidate();
           last = performance.now();
+          // açılışta ilk kareler dokular/gölgeler hazır olmadan çizilebilir: kısa süre sürekli çiz
+          warmUntil = last + 1500;
           requestAnimationFrame(frame);
         }
       },
